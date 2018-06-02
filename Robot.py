@@ -1,5 +1,5 @@
 import random
-
+import math
 
 class Robot(object):
 
@@ -16,7 +16,7 @@ class Robot(object):
 
         self.epsilon0 = epsilon0
         self.epsilon = epsilon0
-        self.t = 0.9
+        self.t = 0.7
 
         self.Qtable = {}
         self.reset()
@@ -46,7 +46,7 @@ class Robot(object):
             self.epsilon = 0.
         else:
             # TODO 2. Update parameters when learning
-            self.epsilon = self.alpha * self.t
+            self.epsilon = self.epsilon * self.t
 
         return self.epsilon
 
@@ -71,7 +71,7 @@ class Robot(object):
             for action in self.valid_actions:
                 if state not in self.Qtable.keys():
                     self.Qtable[state] = {}
-                self.Qtable[state][action] = self.maze.move_robot(action)
+                self.Qtable[state][action] = 0
 
     def choose_action(self):
         """
@@ -88,24 +88,16 @@ class Robot(object):
         if self.learning:
             if is_random_exploration():
                 # TODO 6. Return random choose aciton
-                self.action = self.valid_actions[random.randint(0, len(self.valid_actions) - 1)]
-                return self.action
+                return random.choice(self.valid_actions)
             else:
                 # TODO 7. Return action with highest q value
-                max_q = max(list(self.Qtable[self.state].values()))
-                max_index = list(self.Qtable[self.state].values()).index(max_q)
-                self.action = list(self.Qtable[self.state].keys())[max_index]
-                return self.action
+                return max(self.Qtable[self.state], key=self.Qtable[self.state].get)
         elif self.testing:
             # TODO 7. choose action with highest q value
-            max_q = max(list(self.Qtable[self.state].values()))
-            max_index = list(self.Qtable[self.state].values()).index(max_q)
-            self.action = list(self.Qtable[self.state].keys())[max_index]
-            return self.action
+            return max(self.Qtable[self.state], key=self.Qtable[self.state].get)
         else:
             # TODO 6. Return random choose aciton
-            self.action = self.valid_actions[random.randint(0, len(self.valid_actions) - 1)]
-            return self.action
+            return random.choice(self.valid_actions)
 
     def update_Qtable(self, r, action, next_state):
         """
