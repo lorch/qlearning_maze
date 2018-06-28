@@ -1,6 +1,7 @@
 import random
 import math
 
+
 class Robot(object):
 
     def __init__(self, maze, alpha=0.5, gamma=0.9, epsilon0=0.5):
@@ -16,7 +17,7 @@ class Robot(object):
 
         self.epsilon0 = epsilon0
         self.epsilon = epsilon0
-        self.t = 0.7
+        self.t = 0.
 
         self.Qtable = {}
         self.reset()
@@ -46,7 +47,9 @@ class Robot(object):
             self.epsilon = 0.
         else:
             # TODO 2. Update parameters when learning
-            self.epsilon = self.epsilon * self.t
+            self.epsilon = self.epsilon0 * math.cos(math.pi / 2 / 20 * self.t)
+            # self.epsilon = self.epsilon0 * math.exp(- 0.1 * self.t)
+            self.t += 1
 
         return self.epsilon
 
@@ -67,11 +70,7 @@ class Robot(object):
         # Qtable[state] ={'u':xx, 'd':xx, ...}
         # If Qtable[state] already exits, then do
         # not change it.
-        if state not in self.Qtable.keys():
-            for action in self.valid_actions:
-                if state not in self.Qtable.keys():
-                    self.Qtable[state] = {}
-                self.Qtable[state][action] = 0
+        self.Qtable.setdefault(state, {a: 0.0 for a in self.valid_actions})
 
     def choose_action(self):
         """
